@@ -99,7 +99,7 @@
                         <select name="salesman" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white" required>
                             <option value="">-- Pilih Sales --</option>
                             @foreach ($sales as $sa)
-                                <option value="{{ $sa->nama_sales }}">{{ $sa->nama_sales }}</option>
+                                <option value="{{ $sa->name }}">{{ $sa->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -832,6 +832,7 @@
 
         const selectSales = form.querySelector('select[name="salesman"]');
 
+        console.log(data);
         
         form.nama_pemesan.value=data.nama_pemesan;
         form.alamat_pemesan.value=data.alamat_pemesan;

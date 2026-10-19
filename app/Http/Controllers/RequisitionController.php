@@ -22,7 +22,8 @@ class RequisitionController extends Controller
         $req = MaterialRequisition::create([
             'user_id' => Auth::id(),
             'catatan' => $request->catatan,
-            'status'  => 'Pending'
+            'status'  => 'Pending',
+            'cabang' => Auth::user()->cabang
         ]);
 
         foreach ($request->items as $index => $itemInput) {

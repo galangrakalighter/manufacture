@@ -78,7 +78,7 @@
                                                 Approve
                                             </button>
 
-                                            <form action="{{ route('requisition.reject', $req->id) }}" method="POST">
+                                            {{-- <form action="{{ route('requisition.reject', $req->id) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <button
@@ -86,7 +86,7 @@
                                                     class="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
                                                     Reject
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </div>
                                     @endif
 

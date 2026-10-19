@@ -10,61 +10,59 @@
         }
 
         body{
-            font-family: DejaVu Sans,sans-serif;
-            font-size:12px;
-            color:#000;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            color: #000;
         }
 
         table{
-            width:100%;
-            border-collapse:collapse;
+            width: 100%;
+            border-collapse: collapse;
         }
 
         .border{
-            border:1px solid #000;
+            border: 1px solid #000;
         }
 
         .border th,
         .border td{
-            border:1px solid #000;
-            padding:7px;
+            border: 1px solid #000;
+            padding: 7px;
         }
 
         .title{
-            font-size:22px;
-            font-weight:bold;
-            text-align:center;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
         }
 
         .subtitle{
-            text-align:center;
-            margin-bottom:20px;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .label{
-            width:140px;
-            font-weight:bold;
-            vertical-align:top;
+            width: 140px;
+            font-weight: bold;
+            vertical-align: top;
         }
 
         .text-right{
-            text-align:right;
+            text-align: right;
         }
 
         .text-center{
-            text-align:center;
+            text-align: center;
         }
 
         .bold{
-            font-weight:bold;
+            font-weight: bold;
         }
 
         .footer{
-            margin-top:40px;
+            margin-top: 40px;
         }
-
     </style>
-
 </head>
 
 <body>
@@ -74,27 +72,22 @@
     </div>
 
     <div class="subtitle">
-        No. Penawaran :
-        QTN/{{ date('y') }}/{{ date('m') }}/{{ str_pad(rand(1,9999),4,'0',STR_PAD_LEFT) }}
+        No. Penawaran : {{ $po->quotation_number }}
     </div>
 
     <table>
-
         <tr>
             <td class="label">Tanggal</td>
-            <td>{{ date('d F Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($po->tanggal_pesan)->translatedFormat('d F Y') }}</td>
         </tr>
-
         <tr>
             <td class="label">Kepada Yth.</td>
-            <td>{{ $po->nama_pemesan }}</td>
+            <td>{{ $po->nama_customer }}</td>
         </tr>
-
         <tr>
             <td></td>
-            <td>{{ $po->alamat_pemesan }}</td>
+            <td>{{ $po->alamat_customer }}</td>
         </tr>
-
     </table>
 
     <br>
@@ -109,174 +102,96 @@
     <br><br>
 
     <table class="border">
-
         <thead>
-
             <tr>
-
                 <th width="5%">No</th>
-
-                <th>Nama Barang</th>
-
+                <th>Nama Barang / Judul Cetak</th>
                 <th width="15%">Qty</th>
-
-                <th width="20%">Harga Satuan</th>
-
+                <th width="20%">Harga 1 Box</th>
                 <th width="20%">Subtotal</th>
-
             </tr>
-
         </thead>
-
         <tbody>
-
-            @php
-                $subtotal = 0;
-            @endphp
-
-            @foreach($po->details as $detail)
-
-                @php
-                    $jumlah = $detail->jumlah_beli;
-                    $harga = $po->harga_per_box;
-                    $total = $jumlah * $harga;
-                    $subtotal += $total;
-                @endphp
-
-                <tr>
-
-                    <td class="text-center">
-                        {{ $loop->iteration }}
-                    </td>
-
-                    <td>
-                        {{ $detail->barang->barang }}
-                    </td>
-
-                    <td class="text-center">
-                        {{ number_format($jumlah) }}
-                    </td>
-
-                    <td class="text-right">
-                        Rp {{ number_format($harga,0,',','.') }}
-                    </td>
-
-                    <td class="text-right">
-                        Rp {{ number_format($total,0,',','.') }}
-                    </td>
-
-                </tr>
-
-            @endforeach
-
-        </tbody>
-
-        <tfoot>
-
             <tr>
-
+                <td class="text-center">1</td>
+                <td class="text-center">
+                    {{ $po->barang->barang ?? 'Barang Cetak' }} 
+                </td>
+                <td class="text-center">
+                    {{ number_format($po->quantity) }}
+                </td>
+                <td class="text-right">
+                    @php
+                        // Menghitung harga satuan berdasarkan total_amount dibagi quantity
+                        $hargaSatuan = $po->quantity > 0 ? $po->total_amount / $po->quantity : 0;
+                    @endphp
+                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                </td>
+                <td class="text-right">
+                    Rp {{ number_format($po->total_amount, 0, ',', '.') }}
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
                 <td colspan="4" class="text-right bold">
                     TOTAL PENAWARAN
                 </td>
-
                 <td class="text-right bold">
-                    Rp {{ number_format($subtotal,0,',','.') }}
+                    Rp {{ number_format($po->total_amount, 0, ',', '.') }}
                 </td>
-
             </tr>
-
         </tfoot>
-
     </table>
 
     <br>
 
     <table>
-
         <tr>
-
             <td class="label">
                 Terbilang
             </td>
-
             <td>
-                {{ $po->terbilang }}
+                {{ $po->total_amount }} Rupiah
             </td>
-
         </tr>
-
         <tr>
-
             <td class="label">
                 Masa Berlaku
             </td>
-
             <td>
                 14 Hari sejak tanggal penawaran
             </td>
-
         </tr>
-
         <tr>
-
             <td class="label">
                 Pembayaran
             </td>
-
             <td>
-                {{ $po->tipe_pemesanan }}
+                {{ ucfirst($po->tipe_pemesanan) }}
             </td>
-
         </tr>
-
-        <tr>
-
-            <td class="label">
-                Keterangan
-            </td>
-
-            <td>
-                {{ $po->keterangan }}
-            </td>
-
-        </tr>
-
     </table>
 
     <div class="footer">
-
         Demikian surat penawaran ini kami sampaikan. Besar harapan kami dapat bekerja sama dengan Bapak/Ibu. Atas perhatian dan kepercayaannya kami ucapkan terima kasih.
 
         <br><br><br><br>
 
         <table>
-
             <tr>
-
                 <td class="text-center">
-
                     Hormat Kami
-
                     <br><br><br><br><br>
-
-                    ______________________
-
+                    <b>{{ $po->sales->name ?? 'Salesman' }}</b>
                 </td>
-
                 <td class="text-center">
-
                     Menyetujui
-
                     <br><br><br><br><br>
-
-                    ______________________
-
+                    <b>{{ $po->nama_customer }}</b>
                 </td>
-
             </tr>
-
         </table>
-
     </div>
 
 </body>

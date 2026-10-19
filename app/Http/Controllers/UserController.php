@@ -87,6 +87,20 @@ class UserController extends Controller
         return view('users', compact('users'));
     }
 
+    public function getUserProduction(Request $request){
+        $users = User::where('role', 'production')
+            ->where('cabang', $request->cabang)
+            ->select(
+                'id',
+                'name'
+            )
+            ->orderBy('name')
+            ->get();
+
+
+        return response()->json($users);
+    }
+
     public function store(Request $request){
 
         $validated = $request->validate([

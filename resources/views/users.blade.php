@@ -36,6 +36,7 @@
             <option value="pembelian" {{ request('role') == 'pembelian' ? 'selected' : '' }}>Admin Pembelian</option>
             <option value="sales" {{ request('role') == 'sales' ? 'selected' : '' }}>Sales</option>
             <option value="pricing" {{ request('role') == 'pricing' ? 'selected' : '' }}>Pricing</option>
+            <option value="pracetak" {{ request('role') == 'pracetak' ? 'selected' : '' }}>Pracetak</option>
         </select>
 
         @if(Auth::user()->cabang == 'Pusat')
@@ -73,39 +74,39 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($users as $user)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 text-sm">{{ $loop->iteration }}</td>
+                            <!-- Nomor urut otomatis berlanjut antar halaman -->
+                            <td class="px-6 py-4 text-sm">{{ $users->firstItem() + $loop->index }}</td>
                             <td class="px-6 py-4 font-medium">{{ $user->name }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $user->email }}</td>
                             
                             <td class="px-6 py-4 text-sm">
                                 @php
-                                    $label = strtoupper($user->role); // Default
+                                    $label = strtoupper($user->role); 
                                     if ($user->cabang != 'Pusat') {
                                         $label = match($user->role) {
-                                            'admin'     => 'Kepala Cabang',
-                                            'gudang'    => 'Admin Gudang',
-                                            'penjualan' => 'Admin Penjualan',
-                                            'pembelian' => 'Admin Pembelian',
-                                            'akuntansi' => 'Admin Akuntansi', 
-                                            'sales' => 'Sales', 
-                                            'pricing' => 'Pricing'
+                                            'admin'      => 'Kepala Cabang',
+                                            'gudang'     => 'Admin Gudang',
+                                            'penjualan'  => 'Admin Penjualan',
+                                            'pembelian'  => 'Admin Pembelian',
+                                            'akuntansi'  => 'Admin Akuntansi', 
+                                            'sales'      => 'Sales', 
+                                            'pricing'    => 'Pricing',
+                                            'production' => 'Production',
+                                            'pracetak'   => 'Pracetak',
+                                            'manufacture' => 'Manufacture'
                                         };
-                                    }else{
+                                    } else {
                                         $label = match($user->role) {
                                             'admin' => 'Owner',
                                         };
                                     }
 
-                                    // Tentukan Warna
                                     $colorClass = match($user->role) {
-                                        'admin'     => 'bg-red-100 text-red-700',
-                                        'penjualan' => 'bg-blue-100 text-blue-700',
-                                        'gudang'    => 'bg-green-100 text-green-700',
-                                        'pembelian'    => 'bg-green-100 text-green-700',
-                                        'akuntansi'    => 'bg-green-100 text-green-700',
-                                        'sales'    => 'bg-green-100 text-green-700',
-                                        'pricing'    => 'bg-green-100 text-green-700',
-                                        default     => 'bg-purple-100 text-purple-700',
+                                        'admin'      => 'bg-red-100 text-red-700',
+                                        'penjualan'  => 'bg-blue-100 text-blue-700',
+                                        'gudang', 'pembelian', 'akuntansi', 'sales', 'pricing', 'production', 'pracetak', 'manufacture' 
+                                                    => 'bg-green-100 text-green-700',
+                                        default      => 'bg-purple-100 text-purple-700',
                                     };
                                 @endphp
 
@@ -119,7 +120,6 @@
                             </td>
                             <td class="px-6 py-4 text-sm">{{ $user->created_at?->format('d M Y') ?? '-' }}</td>
                             <td class="px-6 py-4 flex justify-center gap-2">
-                                <!-- Tombol Edit & Delete Tetap Sama -->
                                 <button onclick="openEditModal({{ json_encode($user) }})" class="text-blue-600 hover:text-blue-800">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </button>
@@ -131,6 +131,11 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <!-- Tombol Pagination Laravel -->
+        <div class="p-4 border-t border-gray-100">
+            {{ $users->links() }}
         </div>
     </div>
 </div>
@@ -154,6 +159,9 @@
                     <option value="akuntansi">Admin Akuntansi</option>
                     <option value="sales">Sales</option>
                     <option value="pricing">Pricing</option>
+                    <option value="production">Production</option>
+                    <option value="pracetak">Pracetak</option>
+                    <option value="manufacture">Manufacture</option>
                 </select>
                 <select name="cabang" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
                     @foreach(['Jakarta', 'Bekasi'] as $c)<option value="{{$c}}">{{$c}}</option>@endforeach
@@ -193,6 +201,9 @@
                     <option value="akuntansi">Admin Akuntansi</option>
                     <option value="sales">Sales</option>
                     <option value="pricing">Pricing</option>
+                    <option value="production">Production</option>
+                    <option value="pracetak">Pracetak</option>
+                    <option value="manufacture">Manufacture</option>
                 </select>
                 <select name="cabang" id="edit-cabang" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
                     @foreach(['Jakarta', 'Bekasi'] as $c)
